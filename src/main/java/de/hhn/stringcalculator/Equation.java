@@ -6,15 +6,28 @@ package de.hhn.stringcalculator;
  *  - Addition
  *  - Subtraction
  *  - Multiplication
- *  - 
+ *  - Division
+ *  - Power
+ *  - Variables
  */
 public class Equation {
+    /**
+     * String of characters that represent parts of numbers
+     */
     private static final String NUMERICS = "0123456789.";
 
-    public static boolean validateString(String equation) {
+    /**
+     * Checks if the provided String is parseable into an Equation
+     * @param equation
+     * String to be checked
+     */
+    public static boolean validateStringEquation(String equation) {
         StateOfString state = StateOfString.START;
         int bracketCount = 0;
-        for (char c : equation.toCharArray()) {
+        for (int i = 0; i < equation.length();) {
+            EquationElement currentElement = checkFirstElement(equation.substring(i), state == StateOfString.START);
+            if (currentElement.type == ElementType.UNKNOWN)
+                return false;
             switch (state) {
                 case START:
 
@@ -24,6 +37,15 @@ public class Equation {
         return false;
     }
 
+    /**
+     * Attempts to find out, what the first Element of the given Equation is.
+     * @param equation
+     * Equation in form of String.
+     * @param startOfEquation
+     * Set true if the given Equation is preceded by nothing or '('.
+     * @return
+     * Object containing information about the type, length and inversion of the Element.
+     */
     public static EquationElement checkFirstElement(String equation, boolean startOfEquation) {
         boolean inverse = false;
         EquationElement next;
@@ -61,10 +83,19 @@ public class Equation {
             case '0','1','2','3','4','5','6','7','8','9','.':
                 return checkNumber(equation, false);
         }
+        // TODO Functions
         return new EquationElement(ElementType.UNKNOWN);
     }
 
+    /**
+     * Checks the length and viability of the Number.
+     * @param equation
+     * @param inverse
+     * @return
+     */
     private static EquationElement checkNumber(String equation, boolean inverse) {
+        if (!NUMERICS.contains(equation.substring(0,1)))
+            return new EquationElement(ElementType.UNKNOWN);
         boolean hasDecimal = equation.charAt(0) == '.';
         int count = 1;
         for (char c : equation.substring(1).toCharArray()) {
@@ -96,7 +127,7 @@ public class Equation {
     protected static class EquationElement {
         public final ElementType type;
         public final int length;
-        public boolean inverse;
+        public final boolean inverse;
 
         EquationElement(ElementType type, int length, boolean inverse) {
             this.type = type;
