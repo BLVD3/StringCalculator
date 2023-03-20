@@ -81,7 +81,7 @@ public class Equation {
                     return new EquationElement(ElementType.NUMBER, next.length + 1, true);
                 return new EquationElement(ElementType.UNKNOWN);
             case '0','1','2','3','4','5','6','7','8','9','.':
-                return checkNumber(equation, false);
+                return checkNumber(equation);
         }
         // TODO Functions
         return new EquationElement(ElementType.UNKNOWN);
@@ -90,10 +90,11 @@ public class Equation {
     /**
      * Checks the length and viability of the Number.
      * @param equation
-     * @param inverse
+     * Equation in form of String
      * @return
+     * Returns Information about the Number or Unknown
      */
-    private static EquationElement checkNumber(String equation, boolean inverse) {
+    private static EquationElement checkNumber(String equation) {
         if (!NUMERICS.contains(equation.substring(0,1)))
             return new EquationElement(ElementType.UNKNOWN);
         boolean hasDecimal = equation.charAt(0) == '.';
@@ -105,10 +106,10 @@ public class Equation {
                 hasDecimal = true;
             }
             if (!NUMERICS.contains(Character.toString(c)))
-                return new EquationElement(ElementType.NUMBER, count, inverse);
+                return new EquationElement(ElementType.NUMBER, count);
             count++;
         }
-        return new EquationElement(ElementType.NUMBER, count, inverse);
+        return new EquationElement(ElementType.NUMBER, count);
     }
 
     protected enum ElementType {
