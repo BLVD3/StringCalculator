@@ -30,12 +30,44 @@ public class Equation {
                 return false;
             switch (state) {
                 case START:
-
+                    if (
+                        currentElement.type == ElementType.BRACKET_CLOSE
+                    )
                     break;
+                case NUMERIC:
+                    break;
+                case VARIABLE:
+                    break;
+                case OPERATOR:
+                    break;
+                case END_OF_BRACKET:
+                    break;
+                default:
+                    return false;
             }
+            state = setState(currentElement);
+            if (currentElement.type == ElementType.BRACKET_OPEN)
+                bracketCount++;
+            if (currentElement.type == ElementType.BRACKET_CLOSE)
+                bracketCount--;
+            if (bracketCount < 0)
+                return false;
+            i += currentElement.length;
         }
-        return false;
+        return true;
     }
+
+    private static StateOfString setState(EquationElement currentElement){
+        return switch (currentElement.type) {
+            case VARIABLE -> StateOfString.VARIABLE;
+            case NUMBER -> StateOfString.NUMERIC;
+            case BRACKET_OPEN -> StateOfString.START;
+            case BRACKET_CLOSE -> StateOfString.END_OF_BRACKET;
+            case POWER_OPERATOR, ADDITION_OPERATOR, MULTIPLICATION_OPERATOR -> StateOfString.OPERATOR;
+            default -> StateOfString.INVALID;
+        };
+    }
+
 
     /**
      * Attempts to find out, what the first Element of the given Equation is.
@@ -114,14 +146,13 @@ public class Equation {
 
     protected enum ElementType {
         NUMBER,
-        DECIMAL,
         VARIABLE,
         ADDITION_OPERATOR,
         MULTIPLICATION_OPERATOR,
         POWER_OPERATOR,
         BRACKET_OPEN,
         BRACKET_CLOSE,
-        FUNCTION,
+        //FUNCTION,
         UNKNOWN
     }
 
@@ -162,8 +193,10 @@ public class Equation {
     protected enum StateOfString {
         START,
         NUMERIC,
-        DECIMAL,
+        VARIABLE,
+        END_OF_BRACKET,
         OPERATOR,
+        INVALID
     }
 
     public static void main(String[] args) {
