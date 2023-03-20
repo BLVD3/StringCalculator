@@ -1,5 +1,7 @@
 package de.hhn.stringcalculator;
 
+import java.util.Objects;
+
 /**
  * Calculator which is capable of transforming a String into a functioning Equation.
  * It has the following capability's:
@@ -28,33 +30,44 @@ public class Equation {
             EquationElement currentElement = checkFirstElement(equation.substring(i), state == StateOfString.START);
             if (currentElement.type == ElementType.UNKNOWN)
                 return false;
+            //Switch returns with false if current Element does not make sense after
             switch (state) {
                 case START:
-                    if (
-                        currentElement.type == ElementType.BRACKET_CLOSE
-                    )
+                    switch (currentElement.type) {
+                        case BRACKET_CLOSE, POWER_OPERATOR, MULTIPLICATION_OPERATOR, ADDITION_OPERATOR -> { return false; }
+                    }
                     break;
                 case NUMERIC:
-                    break;
-                case VARIABLE:
+                    if (currentElement.type == ElementType.NUMBER) {
+                        return false;
+                    }
                     break;
                 case OPERATOR:
+                    switch (currentElement.type) {
+                        case BRACKET_CLOSE, POWER_OPERATOR, ADDITION_OPERATOR, MULTIPLICATION_OPERATOR -> { return false; }
+                    }
                     break;
-                case END_OF_BRACKET:
+                case END_OF_BRACKET, VARIABLE:
                     break;
                 default:
                     return false;
             }
+            // Sets the State for next check
             state = setState(currentElement);
+            // Changes Bracket-count if needed
             if (currentElement.type == ElementType.BRACKET_OPEN)
                 bracketCount++;
             if (currentElement.type == ElementType.BRACKET_CLOSE)
                 bracketCount--;
+            //returns false if Brackets are placed incorrectly
             if (bracketCount < 0)
                 return false;
             i += currentElement.length;
         }
-        return true;
+        if (bracketCount != 0)
+            return false;
+        //Checks if Last state is valid and returns
+        return state != StateOfString.START && state != StateOfString.OPERATOR;
     }
 
     private static StateOfString setState(EquationElement currentElement){
@@ -92,7 +105,7 @@ public class Equation {
                 return new EquationElement(ElementType.BRACKET_OPEN);
             case ')':
                 return new EquationElement(ElementType.BRACKET_CLOSE);
-            case 'x':
+            case 'x', 'y':
                 return new EquationElement(ElementType.VARIABLE);
             case '-':
                 if (!startOfEquation || equation.length() == 1)
@@ -200,5 +213,6 @@ public class Equation {
     }
 
     public static void main(String[] args) {
+
     }
 }
