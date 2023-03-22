@@ -10,9 +10,6 @@ package de.hhn.stringcalculator;
  *  - Power
  *  - Variables
  */
-public class Equation {
+public class Function {
 
-    public static void main(String[] args) {
-
-    }
 }
