@@ -1,15 +1,19 @@
 package de.hhn.stringcalculator;
 
-/**
- * Calculator which is capable of transforming a String into a functioning Equation.
- * It has the following capability's:
- *  - Addition
- *  - Subtraction
- *  - Multiplication
- *  - Division
- *  - Power
- *  - Variables
- */
-public class Function {
+public class Function implements EquationPart {
+    private final EquationPart function;
 
+    public Function(EquationPart function) {
+        this.function = function;
+    }
+
+    @Override
+    public double getValue(double... variables) {
+        return function.getValue(variables);
+    }
+
+    @Override
+    public String toString() {
+        return function.toString();
+    }
 }
