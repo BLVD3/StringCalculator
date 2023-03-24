@@ -161,8 +161,9 @@ public class EquationValidator {
     }
 
     public static void main(String[] args) {
-        System.out.println(parseEquation("2^5").getResult().getValue());
-
+        Function function = parseEquation("5*y").getResult();
+        System.out.println(function.getValue(9, 2));
+        System.out.println(function.toString());
     }
 
     public static FunctionParseResult parseEquation(String equation) {

@@ -14,6 +14,6 @@ public class EquationMultiplication extends EquationOperation {
 
     @Override
     public String toString() {
-        return left.toString() + " " + (inverted ? '/' : '*') + " " + right.toString();
+        return "(" + left.toString() + " " + (inverted ? '/' : '*') + " " + right.toString() + ")";
     }
 }

@@ -41,8 +41,8 @@ public class EquationVariable implements EquationPart {
 
     private static void initStandardVariables() {
         variableIds.put('x', 0);
-        variableIds.put('y', 0);
-        variableIds.put('z', 0);
+        variableIds.put('y', 1);
+        variableIds.put('z', 2);
         initDone = true;
     }
 
