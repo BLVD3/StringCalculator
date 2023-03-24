@@ -1,7 +1,6 @@
 package de.hhn.stringcalculator.util;
 
-import de.hhn.stringcalculator.EquationPart;
-import de.hhn.stringcalculator.Function;
+import de.hhn.stringcalculator.*;
 
 import java.lang.annotation.ElementType;
 
@@ -162,11 +161,7 @@ public class EquationValidator {
     }
 
     public static void main(String[] args) {
-        String equation = "(((4x)+3(3-67z)))";
-        if (validateStringEquation(equation))
-            System.out.println(removeBrackets(prepareStringEquation(equation)));
-        else
-            System.out.println(equation + " is not a valid Equation.");
+        System.out.println(parseEquation("2^5").getResult().getValue());
 
     }
 
@@ -179,18 +174,31 @@ public class EquationValidator {
 
     private static EquationPart makeEquationPart(String equation) {
         removeBrackets(equation);
-        // Get last in order of operation
-        // Make Toplayer of Binary Tree
+        EquationElementType operator = lastOperationInEquation(equation);
+        if (!(operator == EquationElementType.UNKNOWN))
+        {
+            return switch (operator) {
+                case POWER_OPERATOR -> makePowerEquation(equation);
+                case MULTIPLICATION_OPERATOR -> makeMultiEquation(equation);
+                case ADDITION_OPERATOR -> makeAddEquation(equation);
+                default -> throw new RuntimeException(
+                        "Theoretically unreachable Code while parsing Equation reached. Expected any Operation, got "
+                                + operator.toString() + ".");
+            };
+        }
+        return switch (equation) {
+            case "x", "y", "z" -> new EquationVariable(EquationVariable.getId(equation.charAt(0)));
+            default -> new EquationNumber(Double.parseDouble(equation));
+        };
         // If No Operation
         // Find Function
-        // If no Function
-        // Variable or Number
-        return null;
     }
 
     private static String removeBrackets(String equation) {
         while(true)
         {
+            if (equation.isEmpty())
+                return equation;
             if (equation.charAt(0) != '(')
                 return equation;
             int bracketCount = 1;
@@ -217,12 +225,67 @@ public class EquationValidator {
                 bracketCount--;
             if (bracketCount == 0) {
                 switch (equation.charAt(i)) {
-                    case '+', '-' -> ;
-                    case '*', '/' -> ;
+                    case '+', '-' -> operationID = 2;
+                    case '*', '/' -> operationID = Math.max(operationID, 1);
+                    case '^' -> operationID = Math.max(operationID, 0);
                 }
             }
         }
-        return null;
+        return switch (operationID) {
+            case 0 -> EquationElementType.POWER_OPERATOR;
+            case 1 -> EquationElementType.MULTIPLICATION_OPERATOR;
+            case 2 -> EquationElementType.ADDITION_OPERATOR;
+            default -> EquationElementType.UNKNOWN;
+        };
+    }
+
+    private static EquationPotentiation makePowerEquation(String equation) {
+        int bracketCount = 0;
+        for (int i = 0; i < equation.length(); i++) {
+            if (equation.charAt(i) == '(')
+                bracketCount++;
+            else if (equation.charAt(i) == ')')
+                bracketCount--;
+            if (bracketCount == 0 && equation.charAt(i) == '^')
+                return new EquationPotentiation(
+                        makeEquationPart(equation.substring(0, i)),
+                        makeEquationPart(equation.substring(i+1)));
+        }
+        throw new IllegalArgumentException("Equation has no Power Operator outside of Brackets");
+    }
+
+    private static EquationMultiplication makeMultiEquation(String equation) {
+        int bracketCount = 0;
+        for (int i = 0; i < equation.length(); i++) {
+            char c = equation.charAt(i);
+            if (c == '(')
+                bracketCount++;
+            else if (c == ')')
+                bracketCount--;
+            if (bracketCount == 0 && (c == '*' || c == '/'))
+                return new EquationMultiplication(
+                        makeEquationPart(equation.substring(0, i)),
+                        makeEquationPart(equation.substring(i+1)),
+                        equation.charAt(i) == '/');
+        }
+        throw new IllegalArgumentException("Equation has no Multiplication Operator outside of Brackets");
+    }
+
+    private static EquationAddition makeAddEquation(String equation) {
+        int bracketCount = 0;
+        for (int i = 0; i < equation.length(); i++) {
+            char c = equation.charAt(i);
+            if (c == '(')
+                bracketCount++;
+            else if (c == ')')
+                bracketCount--;
+            if (bracketCount == 0 && (c == '+' || c == '-'))
+                return new EquationAddition(
+                        makeEquationPart(equation.substring(0, i)),
+                        makeEquationPart(equation.substring(i+1)),
+                        equation.charAt(i) == '-');
+        }
+        throw new IllegalArgumentException("Equation has no Addition Operator outside of Brackets");
     }
 
     private static String prepareStringEquation(String equation) {
