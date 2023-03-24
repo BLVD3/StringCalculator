@@ -1,5 +1,9 @@
 package de.hhn.stringcalculator;
 
+import de.hhn.stringcalculator.util.EquationValidator;
+import de.hhn.stringcalculator.util.FirstElementCheckResult;
+import de.hhn.stringcalculator.util.FunctionParseResult;
+
 public class Function implements EquationPart {
     private final EquationPart function;
 
