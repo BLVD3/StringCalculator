@@ -173,7 +173,7 @@ public class EquationValidator {
     }
 
     private static EquationPart makeEquationPart(String equation) {
-        removeBrackets(equation);
+        equation = removeBrackets(equation);
         EquationElementType operator = lastOperationInEquation(equation);
         if (!(operator == EquationElementType.UNKNOWN))
         {
