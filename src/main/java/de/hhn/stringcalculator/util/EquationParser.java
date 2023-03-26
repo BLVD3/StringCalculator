@@ -2,15 +2,13 @@ package de.hhn.stringcalculator.util;
 
 import de.hhn.stringcalculator.*;
 
-import java.lang.annotation.ElementType;
-
-public class EquationValidator {
+public class EquationParser {
     /**
      * String of characters that represent parts of numbers
      */
     private static final String NUMERICS = "0123456789.";
 
-    private EquationValidator() {  }
+    private EquationParser() {  }
 
     /**
      * Checks if the provided String is parseable into an Equation
@@ -19,6 +17,7 @@ public class EquationValidator {
      */
     public static boolean validateStringEquation(String equation) {
         StateOfString state = StateOfString.START;
+        equation = equation.replaceAll("\\s+","");
         int bracketCount = 0;
         for (int i = 0; i < equation.length();) {
             FirstElementCheckResult currentElement = checkFirstElement(equation.substring(i), state == StateOfString.START);
@@ -161,12 +160,14 @@ public class EquationValidator {
     }
 
     public static void main(String[] args) {
-        Function function = parseEquation("5*y").getResult();
-        System.out.println(function.getValue(9, 2));
-        System.out.println(function.toString());
+        Function function = parseEquation("((10.0) * ((2.0) ^ (3.0))) + (10.0)").getResult();
+        double value = function.getValue(9,2);
+        System.out.println(value);
+        System.out.println(function);
     }
 
     public static FunctionParseResult parseEquation(String equation) {
+        equation = equation.replaceAll("\\s+","");
         if (!validateStringEquation(equation))
             return new FunctionParseResult();
         equation = prepareStringEquation(equation);

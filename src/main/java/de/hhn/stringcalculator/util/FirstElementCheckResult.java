@@ -1,7 +1,5 @@
 package de.hhn.stringcalculator.util;
 
-import de.hhn.stringcalculator.util.EquationValidator;
-
 public class FirstElementCheckResult {
     public final EquationElementType type;
     public final int length;

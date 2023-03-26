@@ -9,11 +9,11 @@ public class EquationMultiplication extends EquationOperation {
 
     @Override
     public double getValue(double... variables) {
-        return left.getValue(variables) / (inverted ? left.getValue(variables) : 1 / left.getValue(variables));
+        return left.getValue(variables) * (!inverted ? right.getValue(variables) : 1 / right.getValue(variables));
     }
 
     @Override
     public String toString() {
-        return "(" + left.toString() + " " + (inverted ? '/' : '*') + " " + right.toString() + ")";
+        return "(" +left.toString() + ") " + (inverted ? "/" : "*") + " (" + right.toString() + ")";
     }
 }

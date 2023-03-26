@@ -12,6 +12,6 @@ public class EquationPotentiation extends EquationOperation {
 
     @Override
     public String toString() {
-        return left.toString() + " ^ " + right.toString();
+        return "(" + left.toString() + ") ^ (" + right.toString() + ")";
     }
 }
